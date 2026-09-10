@@ -1,4 +1,15 @@
-name: Publicar Virtual PC
+name: Publicar PC Virtual
+
+on:
+  push:
+    branches:
+      - principal
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: writename: Publicar Virtual PC
 
 on:
   push:
