@@ -1,35 +1,45 @@
-name: Publicar Virtual PC
-
+name: Windows Cloud PC - Anydesk Melhorado
 on:
-  push:
-    branches:
-      - main
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
+workflow_dispatch:
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - name: Baixar arquivos do projeto
-        uses: actions/checkout@v6
-
-      - name: Configurar GitHub Pages
-        uses: actions/configure-pages@v5
-
-      - name: Enviar arquivos para o GitHub Pages
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: "."
-
-      - name: Publicar Virtual PC
-        id: deployment
-        uses: actions/deploy-pages@v4
+build:
+name: Iniciando Sistema Reforçado
+runs-on: windows-latest
+timeout-minutes: 10080
+env:
+PROCESSOR_COUNT: 8
+OPENGL: "1"
+GITHUB_PRESERVE_WORKFLOW: true
+MEMORY_GB: 16
+steps:
+- name: Baixar e Instalar Essenciais
+run: |
+Invoke-WebRequest -Uri "https://www.dropbox.com/scl/fi/7eiczvgil84czu55dxep3/Downloads.bat?rlkey=wzdc1wxjsph2b7r0atplmdz3p&dl=1" -OutFile "Downloads.bat" -UseBasicParsing
+cmd /c Downloads.bat
+- name: Iniciar AnyDesk
+run: |
+if (Test-Path "start.bat") {
+cmd /c start.bat
+Start-Sleep -Seconds 10
+} else {
+Write-Host "ERRO: Arquivo start.bat não encontrado — verifique o download."
+exit 1
+}
+- name: Monitoramento Contínuo e Reinício Automático
+run: |
+while ($true) {
+$anydesk = Get-Process -Name "AnyDesk" -ErrorAction SilentlyContinue
+if (-not $anydesk -or $anydesk.HasExited) {
+Write-Host "Reiniciando AnyDesk..."
+cmd /c start.bat
+}
+Start-Sleep -Seconds 60
+}
+- name: Manter Sistema Ativo
+run: |
+Start-Sleep -Seconds 604800
+- name: Limpeza Segura
+if: always()
+run: |
+Remove-Item Downloads.bat -Force -ErrorAction SilentlyContinue
+Write-Host "Limpeza finalizada."
